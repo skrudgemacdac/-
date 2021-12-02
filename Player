@@ -1,0 +1,41 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class Player : MonoBehaviour
+{
+    public Rigidbody rigidbody;
+    private Animator animator;
+    public float speed;
+    public float rotationSpeed;
+    private bool isDead;
+    public bool Move;
+
+    public GameObject Character;
+    public GameObject RagDoll;
+
+    private void Start()
+    {
+        rigidbody = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
+    }
+
+    private void Update()
+    {
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
+        Vector3 dirVector = new Vector3(horizontal, 0, vertical);
+        if (dirVector.magnitude > Mathf.Abs(0.05f))
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dirVector), Time.deltaTime * rotationSpeed);
+
+        animator.SetFloat("speed", Vector3.ClampMagnitude(dirVector, 1).magnitude);
+        rigidbody.velocity = Vector3.ClampMagnitude(dirVector, 1) * speed;
+
+    }
+    public void Die()
+    {
+        if (rigidbody.velocity.magnitude > 10f)
+        {
+            Destroy(gameObject);
+        }
+    }
+}
